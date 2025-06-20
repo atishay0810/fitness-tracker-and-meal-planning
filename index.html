@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advanced fitness tracking and AI-powered meal planning app to help you achieve your health goals">
+    <meta name="keywords" content="fitness tracker, meal planner, calorie counter, step counter, healthy recipes, AI nutrition">
+    <title>FitGenius - Smart Fitness & Nutrition Companion</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #3e8e41;
+            --secondary: #2196F3;
+            --secondary-dark: #0b7dda;
+            --dark: #333;
+            --light: #f4f4f4;
+            --danger: #f44336;
+            --danger-dark: #d32f2f;
+            --warning: #ff9800;
+            --warning-dark: #f57c00;
+            --bg-color: #f9f9f9;
+            --text-color: #333;
+            --card-bg: white;
+            --header-bg: linear-gradient(135deg, var(--primary), var(--secondary));
+            --footer-bg: var(--dark);
+            --footer-text: white;
+            --metric-bg: var(--light);
+            --border-color: #ddd;
+            --input-bg: white;
+            --input-text: #333;
+            --meal-card-bg: #f8f9fa;
+        }
+        
+        /* Dark mode variables */
+        .dark-mode {
+            --primary: #4CAF50;
+            --secondary: #2196F3;
+            --bg-color: #121212;
+            --text-color: #f4f4f4;
+            --card-bg: #1e1e1e;
+            --header-bg: linear-gradient(135deg, #2a5a2d, #0d47a1);
+            --footer-bg: #000;
+            --footer-text: #ddd;
+            --metric-bg: #2d2d2d;
+            --dark: #ddd;
+            --light: #2d2d2d;
+            --border-color: #444;
+            --input-bg: #333;
+            --input-text: #f4f4f4;
+            --meal-card-bg: #2a2a2a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+        
+        header {
+            background: var(--header-bg);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .dark-mode-toggle, .water-tracker-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode-toggle:hover, .water-tracker-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h2 i {
+            font-size: 1.2em;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background: var(--metric-bg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .metric:hover {
+            transform: translateY(-3px);
+        }
+        
+        .metric h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .metric p {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0;
+        }
+        
+        button, .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        button:hover, .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        button:active, .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--secondary-dark);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: var(--danger-dark);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background: var(--warning-dark);
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        input, select, textarea {
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            background: var(--input-bg);
+            color: var(--input-text);
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+        
+        .meal-plan {
+            display: grid;
+            gap: 1.2rem;
+        }
+        
+        .meal {
+            padding: 1.2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--meal-card-bg);
+            transition: transform 0.3s ease;
+        }
+        
+        .meal:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .meal h3 {
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .meal p {
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .meal .meal-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .meal .meal-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--primary);
+        }
+        
+        .progress-container {
+            margin: 1.5rem 0;
+        }
+        
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: var(--light);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .food-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .food-item:last-child {
+            border-bottom: none;
+        }
+        
+        .food-item-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .food-item-name {
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+        
+        .food-item-time {
+            font-size: 0.8rem;
+            color: #777;
+        }
+        
+        .dark-mode .food-item-time {
+            color: #aaa;
+        }
+        
+        .food-item-calories {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .food-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .exercise-item {
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            background: var(--metric-bg);
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .exercise-item-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .exercise-item-name {
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+            text-transform: capitalize;
+        }
+        
+        .exercise-item-details {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #777;
+        }
+        
+        .dark-mode .exercise-item-details {
+            color: #aaa;
+        }
+        
+        .exercise-item-calories {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .exercise-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+        }
+        
+        .dark-mode .empty-state {
+            color: #aaa;
+        }
+        
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            margin-top: 2rem;
+        }
+        
+        /* Animation for step counter */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        /* Water tracker modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        
+        .water-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .water-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .water-btn:hover {
+            background: var(--secondary-dark);
+            transform: translateY(-3px);
+        }
+        
+        .water-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .water-progress-container {
+            margin: 1.5rem 0;
+        }
+        
+        .water-progress {
+            height: 20px;
+            background: var(--light);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .water-progress-fill {
+            height: 100%;
+            background: var(--secondary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .water-progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+        
+        /* Achievement badges */
+        .badges-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--metric-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .badge:hover {
+            transform: scale(1.1);
+        }
+        
+        .badge i {
+            font-size: 1.8rem;
+            color: var(--warning);
+        }
+        
+        .badge.locked i {
+            color: #ccc;
+        }
+        
+        .badge .badge-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .badge:hover .badge-tooltip {
+            opacity: 1;
+            visibility: visible;
+            bottom: calc(100% + 10px);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .water-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-actions">
+            <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="water-tracker-btn" id="waterTrackerBtn" title="Water Tracker">
+                <i class="fas fa-tint"></i>
+            </button>
+        </div>
+        <div class="header-content">
+            <h1><i class="fas fa-heartbeat"></i> FitGenius</h1>
+            <p>Your smart fitness & nutrition companion</p>
+        </div>
+        <div style="width: 90px;"> <!-- Spacer to balance the header --></div>
+    </header>
+    
+    <div class="container">
+        <!-- Fitness Tracking Section -->
+        <div class="card">
+            <h2><i class="fas fa-running"></i> Fitness Dashboard</h2>
+            <div class="dashboard">
+                <div class="metric">
+                    <h3>Steps Today</h3>
+                    <p id="step-count">0</p>
+                    <button id="simulate-steps" class="btn-secondary">
+                        <i class="fas fa-walking"></i> Simulate Walking
+                    </button>
+                </div>
+                <div class="metric">
+                    <h3>Calories Burned</h3>
+                    <p id="calories-burned">0</p>
+                    <button id="quick-workout" class="btn-secondary">
+                        <i class="fas fa-fire"></i> Quick Workout
+                    </button>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-labels">
+                    <span>Steps: <span id="current-steps">0</span>/<span id="step-goal">10000</span></span>
+                    <span><span id="progress-percent">0</span>%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="step-progress" class="progress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <h3><i class="fas fa-dumbbell"></i> Log Exercise</h3>
+            <form id="exercise-form">
+                <div class="form-group">
+                    <label for="exercise-type">Exercise Type</label>
+                    <select id="exercise-type" required>
+                        <option value="">Select exercise type</option>
+                        <option value="running">Running</option>
+                        <option value="walking">Walking</option>
+                        <option value="cycling">Cycling</option>
+                        <option value="swimming">Swimming</option>
+                        <option value="weight-training">Weight Training</option>
+                        <option value="yoga">Yoga</option>
+                        <option value="hiit">HIIT</option>
+                        <option value="pilates">Pilates</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="exercise-duration">Duration (minutes)</label>
+                        <input type="number" id="exercise-duration" placeholder="e.g. 30" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="exercise-intensity">Intensity</label>
+                        <select id="exercise-intensity" required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">
+                    <i class="fas fa-plus-circle"></i> Log Exercise
+                </button>
+            </form>
+            
+            <div id="exercise-log" style="margin-top: 1.5rem;">
+                <h3><i class="fas fa-history"></i> Exercise History</h3>
+                <div id="exercise-list">
+                    <div class="empty-state">
+                        <i class="fas fa-dumbbell"></i>
+                        <p>No exercises logged yet</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="badges-container">
+                <div class="badge locked" id="steps-badge">
+                    <i class="fas fa-shoe-prints"></i>
+                    <span class="badge-tooltip">10,000 Steps</span>
+                </div>
+                <div class="badge locked" id="workout-badge">
+                    <i class="fas fa-dumbbell"></i>
+                    <span class="badge-tooltip">Complete 5 Workouts</span>
+                </div>
+                <div class="badge locked" id="streak-badge">
+                    <i class="fas fa-bolt"></i>
+                    <span class="badge-tooltip">3-Day Streak</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Meal Planning Section -->
+        <div class="card">
+            <h2><i class="fas fa-utensils"></i> Meal Planner</h2>
+            
+            <div class="dashboard">
+                <div class="metric">
+                    <h3>Calories Consumed</h3>
+                    <p id="calories-consumed">0</p>
+                </div>
+                <div class="metric">
+                    <h3>Calorie Budget</h3>
+                    <p id="calorie-budget">2000</p>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-labels">
+                    <span>Calories: <span id="current-calories">0</span>/<span id="target-calories">2000</span></span>
+                    <span><span id="calories-percent">0</span>%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="calorie-progress" class="progress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <h3><i class="fas fa-magic"></i> Generate Meal Plan</h3>
+            <form id="meal-plan-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="diet-goal">Diet Goal</label>
+                        <select id="diet-goal" required>
+                            <option value="">Select your goal</option>
+                            <option value="weight-loss">Weight Loss</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="muscle-gain">Muscle Gain</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="diet-preference">Diet Preference</label>
+                        <select id="diet-preference" required>
+                            <option value="">Select dietary preference</option>
+                            <option value="balanced">Balanced</option>
+                            <option value="vegetarian">Vegetarian</option>
+                            <option value="vegan">Vegan</option>
+                            <option value="keto">Keto</option>
+                            <option value="low-carb">Low Carb</option>
+                            <option value="mediterranean">Mediterranean</option>
+                            <option value="pescatarian">Pescatarian</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="allergies">Allergies/Dietary Restrictions (optional)</label>
+                    <input type="text" id="allergies" placeholder="e.g. nuts, dairy, gluten">
+                </div>
+                
+                <button type="submit" class="btn">
+                    <i class="fas fa-cogs"></i> Generate Meal Plan
+                </button>
+            </form>
+            
+            <div id="meal-plan-result" class="meal-plan" style="margin-top: 1.5rem;">
+                <div class="empty-state">
+                    <i class="fas fa-utensils"></i>
+                    <p>No meal plan generated yet</p>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 1.5rem;"><i class="fas fa-plus-circle"></i> Log Food</h3>
+            <form id="food-log-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="food-name">Food Name</label>
+                        <input type="text" id="food-name" placeholder="e.g. Grilled Chicken Salad" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="food-calories">Calories</label>
+                        <input type="number" id="food-calories" placeholder="e.g. 350" required min="1">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="meal-time">Meal Time</label>
+                    <select id="meal-time">
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="snack">Snack</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn">
+                    <i class="fas fa-plus"></i> Add Food
+                </button>
+            </form>
+            
+            <div id="food-log" style="margin-top: 1.5rem;">
+                <h3><i class="fas fa-clipboard-list"></i> Today's Food Log</h3>
+                <div id="food-list">
+                    <div class="empty-state">
+                        <i class="fas fa-utensils"></i>
+                        <p>No foods logged yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Water Tracker Modal -->
+    <div class="modal" id="waterModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeWaterModal">&times;</button>
+            <h2><i class="fas fa-tint"></i> Water Tracker</h2>
+            <p>Stay hydrated throughout the day. Track your water intake to maintain optimal health.</p>
+            
+            <div class="water-progress-container">
+                <div class="progress-labels">
+                    <span>Water: <span id="current-water">0</span>/<span id="water-goal">8</span> cups</span>
+                    <span><span id="water-percent">0</span>%</span>
+                </div>
+                <div class="water-progress">
+                    <div id="water-progress-fill" class="water-progress-fill" style="width: 0%"></div>
+                    <div class="water-progress-text" id="water-progress-text">0%</div>
+                </div>
+            </div>
+            
+            <div class="water-buttons">
+                <button class="water-btn" data-amount="1">
+                    <i class="fas fa-glass-whiskey"></i>
+                    <span>1 cup (8oz)</span>
+                </button>
+                <button class="water-btn" data-amount="2">
+                    <i class="fas fa-glass-whiskey"></i>
+                    <span>2 cups (16oz)</span>
+                </button>
+                <button class="water-btn" data-amount="0.5">
+                    <i class="fas fa-glass-whiskey"></i>
+                    <span>½ cup (4oz)</span>
+                </button>
+                <button class="water-btn" data-amount="0.25">
+                    <i class="fas fa-glass-whiskey"></i>
+                    <span>¼ cup (2oz)</span>
+                </button>
+            </div>
+            
+            <button class="btn-secondary" id="resetWater">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 FitGenius App. All rights reserved.</p>
+        <p>Track your fitness and plan your meals for a healthier life.</p>
+    </footer>
+    
+    <script>
+        // DOM Elements
+        const stepCountEl = document.getElementById('step-count');
+        const currentStepsEl = document.getElementById('current-steps');
+        const caloriesBurnedEl = document.getElementById('calories-burned');
+        const stepProgressEl = document.getElementById('step-progress');
+        const progressPercentEl = document.getElementById('progress-percent');
+        const stepGoalEl = document.getElementById('step-goal');
+        const simulateStepsBtn = document.getElementById('simulate-steps');
+        const quickWorkoutBtn = document.getElementById('quick-workout');
+        const exerciseForm = document.getElementById('exercise-form');
+        const exerciseList = document.getElementById('exercise-list');
+        const caloriesConsumedEl = document.getElementById('calories-consumed');
+        const currentCaloriesEl = document.getElementById('current-calories');
+        const targetCaloriesEl = document.getElementById('target-calories');
+        const caloriesPercentEl = document.getElementById('calories-percent');
+        const calorieBudgetEl = document.getElementById('calorie-budget');
+        const calorieProgressEl = document.getElementById('calorie-progress');
+        const mealPlanForm = document.getElementById('meal-plan-form');
+        const mealPlanResult = document.getElementById('meal-plan-result');
+        const foodLogForm = document.getElementById('food-log-form');
+        const foodList = document.getElementById('food-list');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const waterTrackerBtn = document.getElementById('waterTrackerBtn');
+        const waterModal = document.getElementById('waterModal');
+        const closeWaterModal = document.getElementById('closeWaterModal');
+        const waterProgressFill = document.getElementById('water-progress-fill');
+        const waterProgressText = document.getElementById('water-progress-text');
+        const currentWaterEl = document.getElementById('current-water');
+        const waterGoalEl = document.getElementById('water-goal');
+        const waterPercentEl = document.getElementById('water-percent');
+        const resetWaterBtn = document.getElementById('resetWater');
+        const waterButtons = document.querySelectorAll('.water-btn');
+        const stepsBadge = document.getElementById('steps-badge');
+        const workoutBadge = document.getElementById('workout-badge');
+        const streakBadge = document.getElementById('streak-badge');
+        
+        // App State
+        let state = {
+            steps: 0,
+            stepGoal: 10000,
+            caloriesBurned: 0,
+            exercises: [],
+            caloriesConsumed: 0,
+            calorieBudget: 2000,
+            foods: [],
+            mealPlan: null,
+            darkMode: false,
+            waterIntake: 0,
+            waterGoal: 8, // 8 cups (64oz) default
+            achievements: {
+                steps: false,
+                workouts: 0,
+                streak: 0
+            },
+            lastActivityDate: null
+        };
+        
+        // Initialize the app
+        function init() {
+            updateUI();
+            loadFromLocalStorage();
+            
+            // Set up event listeners
+            simulateStepsBtn.addEventListener('click', simulateWalking);
+            quickWorkoutBtn.addEventListener('click', quickWorkout);
+            exerciseForm.addEventListener('submit', logExercise);
+            mealPlanForm.addEventListener('submit', generateMealPlan);
+            foodLogForm.addEventListener('submit', logFood);
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+            waterTrackerBtn.addEventListener('click', openWaterModal);
+            closeWaterModal.addEventListener('click', closeWaterModalFunc);
+            resetWaterBtn.addEventListener('click', resetWaterIntake);
+            waterButtons.forEach(btn => {
+                btn.addEventListener('click', () => addWater(parseFloat(btn.dataset.amount)));
+            });
+            
+            // Check if device supports step counting (simulated in this demo)
+            if (window.DeviceMotionEvent) {
+                window.addEventListener('devicemotion', handleMotion);
+            } else {
+                console.log("Device motion not supported - using manual step simulation");
+            }
+            
+            // Apply dark mode if enabled
+            if (state.darkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            // Check for new day to reset daily stats
+            checkNewDay();
+            
+            // Check achievements
+            checkAchievements();
+            
+            // Update empty states
+            updateEmptyStates();
+        }
+        
+        // Update empty states based on current data
+        function updateEmptyStates() {
+            // Exercise list
+            if (state.exercises.length > 0) {
+                const emptyState = exerciseList.querySelector('.empty-state');
+                if (emptyState) exerciseList.removeChild(emptyState);
+            } else if (!exerciseList.querySelector('.empty-state')) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-dumbbell"></i>
+                    <p>No exercises logged yet</p>
+                `;
+                exerciseList.appendChild(emptyState);
+            }
+            
+            // Food list
+            if (state.foods.length > 0) {
+                const emptyState = foodList.querySelector('.empty-state');
+                if (emptyState) foodList.removeChild(emptyState);
+            } else if (!foodList.querySelector('.empty-state')) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-utensils"></i>
+                    <p>No foods logged yet</p>
+                `;
+                foodList.appendChild(emptyState);
+            }
+            
+            // Meal plan
+            if (state.mealPlan) {
+                const emptyState = mealPlanResult.querySelector('.empty-state');
+                if (emptyState) mealPlanResult.removeChild(emptyState);
+            } else if (!mealPlanResult.querySelector('.empty-state')) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-utensils"></i>
+                    <p>No meal plan generated yet</p>
+                `;
+                mealPlanResult.appendChild(emptyState);
+            }
+        }
+        
+        // Check if it's a new day to reset daily stats
+        function checkNewDay() {
+            const today = new Date().toDateString();
+            const lastDate = state.lastActivityDate ? new Date(state.lastActivityDate).toDateString() : null;
+            
+            if (lastDate !== today) {
+                // Reset daily stats but keep settings
+                state.steps = 0;
+                state.caloriesBurned = 0;
+                state.caloriesConsumed = 0;
+                state.waterIntake = 0;
+                state.foods = [];
+                state.exercises = [];
+                state.lastActivityDate = new Date().toISOString();
+                
+                // Check if we have a streak (activity yesterday)
+                if (lastDate && isYesterday(lastDate)) {
+                    state.achievements.streak++;
+                } else {
+                    state.achievements.streak = 0;
+                }
+                
+                updateUI();
+                saveToLocalStorage();
+                updateEmptyStates();
+            }
+        }
+        
+        // Helper function to check if a date string is yesterday
+        function isYesterday(dateString) {
+            const date = new Date(dateString);
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            return date.toDateString() === yesterday.toDateString();
+        }
+        
+        // Toggle dark mode
+        function toggleDarkMode() {
+            state.darkMode = !state.darkMode;
+            document.body.classList.toggle('dark-mode');
+            
+            // Update icon
+            if (state.darkMode) {
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            
+            saveToLocalStorage();
+        }
+        
+        // Water tracker functions
+        function openWaterModal() {
+            waterModal.style.display = 'flex';
+        }
+        
+        function closeWaterModalFunc() {
+            waterModal.style.display = 'none';
+        }
+        
+        function addWater(amount) {
+            state.waterIntake += amount;
+            updateWaterUI();
+            saveToLocalStorage();
+        }
+        
+        function resetWaterIntake() {
+            state.waterIntake = 0;
+            updateWaterUI();
+            saveToLocalStorage();
+        }
+        
+        function updateWaterUI() {
+            currentWaterEl.textContent = state.waterIntake.toFixed(1);
+            const percent = Math.min((state.waterIntake / state.waterGoal) * 100, 100);
+            waterProgressFill.style.width = `${percent}%`;
+            waterProgressText.textContent = `${Math.round(percent)}%`;
+            waterPercentEl.textContent = Math.round(percent);
+            
+            // Pulse animation when reaching water goals
+            if (state.waterIntake > 0 && state.waterIntake % 2 === 0) {
+                waterProgressFill.classList.add('pulse');
+                setTimeout(() => {
+                    waterProgressFill.classList.remove('pulse');
+                }, 1000);
+            }
+        }
+        
+        // Check and update achievements
+        function checkAchievements() {
+            // Steps achievement
+            if (state.steps >= 10000 && !state.achievements.steps) {
+                state.achievements.steps = true;
+                stepsBadge.classList.remove('locked');
+                showNotification('Achievement unlocked: 10,000 Steps!', 'success');
+            }
+            
+            // Workouts achievement
+            if (state.achievements.workouts >= 5) {
+                workoutBadge.classList.remove('locked');
+            }
+            
+            // Streak achievement
+            if (state.achievements.streak >= 3) {
+                streakBadge.classList.remove('locked');
+                showNotification('Achievement unlocked: 3-Day Streak!', 'success');
+            }
+            
+            updateBadgesUI();
+        }
+        
+        function updateBadgesUI() {
+            // Update workout badge icon based on progress
+            if (state.achievements.workouts >= 5) {
+                workoutBadge.innerHTML = '<i class="fas fa-dumbbell"></i>';
+            } else {
+                workoutBadge.innerHTML = `<i class="fas fa-dumbbell"></i><span style="position: absolute; font-size: 0.6rem; bottom: 5px;">${state.achievements.workouts}/5</span>`;
+            }
+            
+            // Update streak badge icon based on progress
+            if (state.achievements.streak >= 3) {
+                streakBadge.innerHTML = '<i class="fas fa-bolt"></i>';
+            } else {
+                streakBadge.innerHTML = `<i class="fas fa-bolt"></i><span style="position: absolute; font-size: 0.6rem; bottom: 5px;">${state.achievements.streak}/3</span>`;
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Load data from localStorage
+        function loadFromLocalStorage() {
+            const savedState = localStorage.getItem('fitMealState');
+            if (savedState) {
+                const parsed = JSON.parse(savedState);
+                
+                // Merge with current state to ensure new fields are included
+                state = {
+                    ...state,
+                    ...parsed,
+                    // Preserve these fields if they weren't in saved state
+                    darkMode: parsed.darkMode !== undefined ? parsed.darkMode : state.darkMode,
+                    waterGoal: parsed.waterGoal !== undefined ? parsed.waterGoal : state.waterGoal,
+                    achievements: parsed.achievements || state.achievements
+                };
+                
+                updateUI();
+                
+                // Render existing exercises
+                state.exercises.forEach(exercise => {
+                    addExerciseToDOM(exercise);
+                });
+                
+                // Render existing foods
+                state.foods.forEach(food => {
+                    addFoodToDOM(food);
+                });
+                
+                // Render meal plan if exists
+                if (state.mealPlan) {
+                    renderMealPlan(state.mealPlan);
+                }
+                
+                // Update water UI
+                updateWaterUI();
+                updateEmptyStates();
+            }
+        }
+        
+        // Save data to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('fitMealState', JSON.stringify(state));
+        }
+        
+        // Update all UI elements based on current state
+        function updateUI() {
+            // Steps and calories
+            stepCountEl.textContent = state.steps;
+            currentStepsEl.textContent = state.steps;
+            caloriesBurnedEl.textContent = state.caloriesBurned;
+            stepGoalEl.textContent = state.stepGoal;
+            
+            // Progress bars
+            const stepProgress = (state.steps / state.stepGoal) * 100;
+            stepProgressEl.style.width = `${Math.min(stepProgress, 100)}%`;
+            progressPercentEl.textContent = Math.floor(Math.min(stepProgress, 100));
+            
+            const calorieProgress = (state.caloriesConsumed / state.calorieBudget) * 100;
+            calorieProgressEl.style.width = `${Math.min(calorieProgress, 100)}%`;
+            caloriesPercentEl.textContent = Math.round(calorieProgress);
+            
+            // Calories
+            caloriesConsumedEl.textContent = state.caloriesConsumed;
+            currentCaloriesEl.textContent = state.caloriesConsumed;
+            calorieBudgetEl.textContent = state.calorieBudget;
+            targetCaloriesEl.textContent = state.calorieBudget;
+            
+            // Pulse animation when reaching step goals
+            if (state.steps > 0 && state.steps % 1000 === 0) {
+                stepCountEl.classList.add('pulse');
+                setTimeout(() => {
+                    stepCountEl.classList.remove('pulse');
+                }, 1000);
+            }
+            
+            // Check achievements
+            checkAchievements();
+            
+            saveToLocalStorage();
+            updateEmptyStates();
+        }
+        
+        // Simulate walking (for demo purposes)
+        function simulateWalking() {
+            let stepsToAdd = 0;
+            const interval = setInterval(() => {
+                stepsToAdd += 10;
+                state.steps += 10;
+                
+                // Estimate calories burned (very simplified)
+                state.caloriesBurned = Math.floor(state.steps * 0.04);
+                
+                updateUI();
+                
+                if (stepsToAdd >= 1000) {
+                    clearInterval(interval);
+                }
+            }, 100);
+        }
+        
+        // Quick workout function
+        function quickWorkout() {
+            const workouts = [
+                { type: 'hiit', duration: 15, intensity: 'high' },
+                { type: 'yoga', duration: 20, intensity: 'medium' },
+                { type: 'weight-training', duration: 25, intensity: 'high' },
+                { type: 'cycling', duration: 30, intensity: 'medium' }
+            ];
+            
+            const workout = workouts[Math.floor(Math.random() * workouts.length)];
+            logExerciseFromData(workout);
+            
+            showNotification(`Quick ${workout.type} workout logged!`, 'success');
+        }
+        
+        // Handle device motion (simulated step counting)
+        function handleMotion(event) {
+            // In a real app, we would analyze accelerometer data to detect steps
+            // For this demo, we'll just simulate occasional step increases
+            if (Math.random() > 0.9) {
+                state.steps += 1;
+                state.caloriesBurned = Math.floor(state.steps * 0.04);
+                updateUI();
+            }
+        }
+        
+        // Log an exercise
+        function logExercise(e) {
+            e.preventDefault();
+            
+            const type = document.getElementById('exercise-type').value;
+            const duration = parseInt(document.getElementById('exercise-duration').value);
+            const intensity = document.getElementById('exercise-intensity').value;
+            
+            logExerciseFromData({ type, duration, intensity });
+            
+            // Reset form
+            exerciseForm.reset();
+        }
+        
+        // Log exercise from data object
+        function logExerciseFromData(data) {
+            const { type, duration, intensity } = data;
+            
+            if (!type || !duration) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Calculate calories burned (simplified)
+            let calories = 0;
+            switch (type) {
+                case 'running':
+                    calories = intensity === 'high' ? 12 : intensity === 'medium' ? 10 : 8;
+                    break;
+                case 'walking':
+                    calories = intensity === 'high' ? 6 : intensity === 'medium' ? 5 : 4;
+                    break;
+                case 'cycling':
+                    calories = intensity === 'high' ? 10 : intensity === 'medium' ? 8 : 6;
+                    break;
+                case 'swimming':
+                    calories = intensity === 'high' ? 11 : intensity === 'medium' ? 9 : 7;
+                    break;
+                case 'weight-training':
+                    calories = intensity === 'high' ? 8 : intensity === 'medium' ? 6 : 5;
+                    break;
+                case 'yoga':
+                    calories = intensity === 'high' ? 5 : intensity === 'medium' ? 4 : 3;
+                    break;
+                case 'hiit':
+                    calories = intensity === 'high' ? 15 : intensity === 'medium' ? 12 : 10;
+                    break;
+                case 'pilates':
+                    calories = intensity === 'high' ? 6 : intensity === 'medium' ? 5 : 4;
+                    break;
+                default:
+                    calories = intensity === 'high' ? 8 : intensity === 'medium' ? 6 : 4;
+            }
+            
+            calories *= duration;
+            
+            const exercise = {
+                id: Date.now(),
+                type,
+                duration,
+                intensity,
+                calories,
+                date: new Date().toLocaleTimeString()
+            };
+            
+            state.exercises.push(exercise);
+            state.caloriesBurned += calories;
+            state.achievements.workouts++;
+            state.lastActivityDate = new Date().toISOString();
+            addExerciseToDOM(exercise);
+            updateUI();
+        }
+        
+        // Add exercise to DOM
+        function addExerciseToDOM(exercise) {
+            // Remove empty state if it exists
+            const emptyState = exerciseList.querySelector('.empty-state');
+            if (emptyState) exerciseList.removeChild(emptyState);
+            
+            const exerciseEl = document.createElement('div');
+            exerciseEl.className = 'exercise-item';
+            
+            exerciseEl.innerHTML = `
+                <div class="exercise-item-info">
+                    <div class="exercise-item-name">${exercise.type.charAt(0).toUpperCase() + exercise.type.slice(1)}</div>
+                    <div class="exercise-item-details">
+                        <span>${exercise.duration} min</span>
+                        <span>•</span>
+                        <span>${exercise.intensity} intensity</span>
+                    </div>
+                </div>
+                <div class="exercise-item-calories">+${exercise.calories} cal</div>
+                <div class="exercise-item-actions">
+                    <button onclick="removeExercise(${exercise.id})" class="btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            exerciseList.appendChild(exerciseEl);
+        }
+        
+        // Remove exercise
+        function removeExercise(id) {
+            const index = state.exercises.findIndex(ex => ex.id === id);
+            if (index !== -1) {
+                const removedExercise = state.exercises.splice(index, 1)[0];
+                state.caloriesBurned -= removedExercise.calories;
+                state.achievements.workouts = Math.max(0, state.achievements.workouts - 1);
+                updateUI();
+                
+                // Re-render exercise list
+                exerciseList.innerHTML = '';
+                state.exercises.forEach(exercise => {
+                    addExerciseToDOM(exercise);
+                });
+                
+                // Add empty state if no exercises left
+                if (state.exercises.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state';
+                    emptyState.innerHTML = `
+                        <i class="fas fa-dumbbell"></i>
+                        <p>No exercises logged yet</p>
+                    `;
+                    exerciseList.appendChild(emptyState);
+                }
+                
+                showNotification('Exercise removed', 'info');
+            }
+        }
+        
+        // Generate meal plan
+        function generateMealPlan(e) {
+            e.preventDefault();
+            
+            const goal = document.getElementById('diet-goal').value;
+            const preference = document.getElementById('diet-preference').value;
+            const allergies = document.getElementById('allergies').value;
+            
+            if (!goal || !preference) {
+                showNotification('Please select both goal and preference', 'error');
+                return;
+            }
+            
+            // Adjust calorie budget based on goal
+            switch (goal) {
+                case 'weight-loss':
+                    state.calorieBudget = 1500;
+                    break;
+                case 'maintenance':
+                    state.calorieBudget = 2000;
+                    break;
+                case 'muscle-gain':
+                    state.calorieBudget = 2500;
+                    break;
+            }
+            
+            // Generate meal plan based on preference (simplified for demo)
+            const mealPlan = {
+                goal,
+                preference,
+                allergies,
+                meals: []
+            };
+            
+            // Sample meals database (in a real app, this would be much more extensive)
+            const mealsDatabase = {
+                balanced: [
+                    { 
+                        name: 'Breakfast: Scrambled Eggs with Whole Wheat Toast', 
+                        calories: 350,
+                        description: '2 eggs scrambled with spinach, 1 slice whole wheat toast, 1/2 avocado',
+                        macros: '25g protein, 30g carbs, 18g fat',
+                        time: 'breakfast'
+                    },
+                    { 
+                        name: 'Lunch: Grilled Chicken Salad', 
+                        calories: 450,
+                        description: 'Grilled chicken breast, mixed greens, cherry tomatoes, cucumber, olive oil dressing',
+                        macros: '35g protein, 20g carbs, 25g fat',
+                        time: 'lunch'
+                    },
+                    { 
+                        name: 'Dinner: Salmon with Quinoa', 
+                        calories: 500,
+                        description: 'Baked salmon fillet, 1/2 cup quinoa, steamed broccoli',
+                        macros: '40g protein, 35g carbs, 20g fat',
+                        time: 'dinner'
+                    },
+                    { 
+                        name: 'Snack: Greek Yogurt with Berries', 
+                        calories: 200,
+                        description: '1 cup Greek yogurt, 1/2 cup mixed berries, 1 tbsp honey',
+                        macros: '15g protein, 25g carbs, 2g fat',
+                        time: 'snack'
+                    }
+                ],
+                vegetarian: [
+                    { 
+                        name: 'Breakfast: Greek Yogurt Parfait', 
+                        calories: 300,
+                        description: 'Greek yogurt, granola, mixed berries, chia seeds',
+                        macros: '20g protein, 35g carbs, 8g fat',
+                        time: 'breakfast'
+                    },
+                    { 
+                        name: 'Lunch: Chickpea Salad Wrap', 
+                        calories: 400,
+                        description: 'Whole wheat wrap, mashed chickpeas, lettuce, tomato, tahini dressing',
+                        macros: '18g protein, 45g carbs, 15g fat',
+                        time: 'lunch'
+                    },
+                    { 
+                        name: 'Dinner: Lentil Curry with Rice', 
+                        calories: 450,
+                        description: 'Red lentil curry, 1/2 cup brown rice, side of roasted vegetables',
+                        macros: '22g protein, 60g carbs, 10g fat',
+                        time: 'dinner'
+                    },
+                    { 
+                        name: 'Snack: Hummus with Veggies', 
+                        calories: 200,
+                        description: '1/4 cup hummus, carrot and cucumber sticks',
+                        macros: '6g protein, 20g carbs, 10g fat',
+                        time: 'snack'
+                    }
+                ],
+                vegan: [
+                    { 
+                        name: 'Breakfast: Smoothie Bowl', 
+                        calories: 350,
+                        description: 'Banana, almond milk, spinach, chia seeds, peanut butter, topped with granola',
+                        macros: '12g protein, 45g carbs, 15g fat',
+                        time: 'breakfast'
+                    },
+                    { 
+                        name: 'Lunch: Buddha Bowl', 
+                        calories: 450,
+                        description: 'Quinoa, roasted sweet potato, kale, avocado, tahini dressing',
+                        macros: '15g protein, 55g carbs, 20g fat',
+                        time: 'lunch'
+                    },
+                    { 
+                        name: 'Dinner: Tofu Stir Fry', 
+                        calories: 400,
+                        description: 'Tofu, mixed vegetables, brown rice, soy-ginger sauce',
+                        macros: '25g protein, 40g carbs, 15g fat',
+                        time: 'dinner'
+                    },
+                    { 
+                        name: 'Snack: Energy Balls', 
+                        calories: 150,
+                        description: 'Dates, oats, almond butter, cocoa powder',
+                        macros: '4g protein, 25g carbs, 6g fat',
+                        time: 'snack'
+                    }
+                ],
+                keto: [
+                    { 
+                        name: 'Breakfast: Avocado & Eggs', 
+                        calories: 400,
+                        description: '2 eggs fried in butter, 1/2 avocado, sautéed spinach',
+                        macros: '18g protein, 8g carbs, 35g fat',
+                        time: 'breakfast'
+                    },
+                    { 
+                        name: 'Lunch: Chicken Caesar Salad (no croutons)', 
+                        calories: 450,
+                        description: 'Grilled chicken, romaine, parmesan, Caesar dressing',
+                        macros: '35g protein, 6g carbs, 32g fat',
+                        time: 'lunch'
+                    },
+                    { 
+                        name: 'Dinner: Steak with Broccoli', 
+                        calories: 500,
+                        description: 'Ribeye steak, roasted broccoli with butter',
+                        macros: '40g protein, 10g carbs, 35g fat',
+                        time: 'dinner'
+                    },
+                    { 
+                        name: 'Snack: Cheese & Nuts', 
+                        calories: 200,
+                        description: 'Cheddar cheese cubes, 1/4 cup almonds',
+                        macros: '10g protein, 5g carbs, 18g fat',
+                        time: 'snack'
+                    }
+                ],
+                'low-carb': [
+                    { 
+                        name: 'Breakfast: Veggie Omelette', 
+                        calories: 350,
+                        description: '3-egg omelette with mushrooms, peppers, and cheese',
+                        macros: '25g protein, 10g carbs, 25g fat',
+                        time: 'breakfast'
+                    },
+                    { 
+                        name: 'Lunch: Turkey Lettuce Wraps', 
+                        calories: 400,
+                        description: 'Ground turkey, lettuce leaves, avocado, salsa',
+                        macros: '30g protein, 12g carbs, 28g fat',
+                        time: 'lunch'
+                    },
+                    { 
+                        name: 'Dinner: Baked Cod with Asparagus', 
+                        calories: 450,
+                        description: 'Cod fillet, roasted asparagus, lemon butter sauce',
+                        macros: '35g protein, 15g carbs, 30g fat',
+                        time: 'dinner'
+                    },
+                    { 
+                        name: 'Snack: Cottage Cheese with Cinnamon', 
+                        calories: 150,
+                        description: '1/2 cup cottage cheese, cinnamon',
+                        macros: '15g protein, 6g carbs, 5g fat',
+                        time: 'snack'
+                    }
+                ],
+                mediterranean: [
+                    { 
+                        name: 'Breakfast: Greek Yogurt with Honey and Walnuts', 
+                        calories: 300,
+                        description: 'Greek yogurt, honey, walnuts, and a sprinkle of cinnamon',
+                        macros: '15g protein, 25g carbs, 15g fat',
+                        time: 'breakfast'
+                    },
+                    { 
+                        name: 'Lunch: Greek Salad with Grilled Chicken', 
+                        calories: 450,
+                        description: 'Cucumbers, tomatoes, olives, feta, grilled chicken, olive oil dressing',
+                        macros: '30g protein, 20g carbs, 30g fat',
+                        time: 'lunch'
+                    },
+                    { 
+                        name: 'Dinner: Grilled Salmon with Lemon and Herbs', 
+                        calories: 500,
+                        description: 'Salmon fillet with lemon, herbs, roasted vegetables, and quinoa',
+                        macros: '35g protein, 30g carbs, 25g fat',
+                        time: 'dinner'
+                    },
+                    { 
+                        name: 'Snack: Hummus with Whole Wheat Pita', 
+                        calories: 200,
+                        description: '1/4 cup hummus with 1 small whole wheat pita',
+                        macros: '8g protein, 25g carbs, 8g fat',
+                        time: 'snack'
+                    }
+                ],
+                pescatarian: [
+                    { 
+                        name: 'Breakfast: Smoked Salmon Toast', 
+                        calories: 350,
+                        description: 'Whole grain toast with cream cheese, smoked salmon, and capers',
+                        macros: '20g protein, 30g carbs, 15g fat',
+                        time: 'breakfast'
+                    },
+                    { 
+                        name: 'Lunch: Tuna Salad Wrap', 
+                        calories: 400,
+                        description: 'Whole wheat wrap with tuna salad, lettuce, and tomato',
+                        macros: '25g protein, 35g carbs, 15g fat',
+                        time: 'lunch'
+                    },
+                    { 
+                        name: 'Dinner: Shrimp Stir Fry', 
+                        calories: 450,
+                        description: 'Shrimp with mixed vegetables and brown rice in light sauce',
+                        macros: '30g protein, 40g carbs, 15g fat',
+                        time: 'dinner'
+                    },
+                    { 
+                        name: 'Snack: Seaweed Snacks', 
+                        calories: 100,
+                        description: 'Roasted seaweed snacks',
+                        macros: '5g protein, 10g carbs, 5g fat',
+                        time: 'snack'
+                    }
+                ]
+            };
+            
+            // Select appropriate meals
+            let meals = mealsDatabase[preference] || mealsDatabase['balanced'];
+            
+            // Filter for allergies if specified
+            if (allergies) {
+                const allergyList = allergies.split(',').map(a => a.trim().toLowerCase());
+                meals = meals.filter(meal => {
+                    return !allergyList.some(allergy => 
+                        meal.description.toLowerCase().includes(allergy)
+                    );
+                });
+                
+                if (meals.length === 0) {
+                    showNotification('No meals found that match your restrictions. Showing regular meals.', 'warning');
+                    meals = mealsDatabase[preference] || mealsDatabase['balanced'];
+                }
+            }
+            
+            // Adjust portion sizes to match calorie budget
+            const totalCalories = meals.reduce((sum, meal) => sum + meal.calories, 0);
+            const adjustmentFactor = state.calorieBudget / totalCalories;
+            
+            mealPlan.meals = meals.map(meal => {
+                return {
+                    ...meal,
+                    calories: Math.round(meal.calories * adjustmentFactor)
+                };
+            });
+            
+            state.mealPlan = mealPlan;
+            renderMealPlan(mealPlan);
+            updateUI();
+            
+            showNotification('Meal plan generated successfully!', 'success');
+            
+            // Reset form
+            mealPlanForm.reset();
+        }
+        
+        // Render meal plan to DOM
+        function renderMealPlan(mealPlan) {
+            // Remove empty state if it exists
+            const emptyState = mealPlanResult.querySelector('.empty-state');
+            if (emptyState) mealPlanResult.removeChild(emptyState);
+            
+            mealPlanResult.innerHTML = '';
+            
+            const header = document.createElement('div');
+            header.innerHTML = `
+                <h3>Your ${mealPlan.preference} Meal Plan (${mealPlan.goal.replace('-', ' ')})</h3>
+                <p>Daily calorie target: ${state.calorieBudget} kcal</p>
+                ${mealPlan.allergies ? `<p>Allergies/Dietary Restrictions: ${mealPlan.allergies}</p>` : ''}
+            `;
+            mealPlanResult.appendChild(header);
+            
+            // Group meals by time
+            const mealsByTime = {
+                breakfast: [],
+                lunch: [],
+                dinner: [],
+                snack: []
+            };
+            
+            mealPlan.meals.forEach(meal => {
+                mealsByTime[meal.time].push(meal);
+            });
+            
+            // Render meals by time
+            for (const [time, meals] of Object.entries(mealsByTime)) {
+                if (meals.length > 0) {
+                    const timeHeader = document.createElement('h3');
+                    timeHeader.style.marginTop = '1rem';
+                    timeHeader.textContent = `${time.charAt(0).toUpperCase() + time.slice(1)} (${meals.reduce((sum, meal) => sum + meal.calories, 0)} kcal)`;
+                    mealPlanResult.appendChild(timeHeader);
+                    
+                    meals.forEach(meal => {
+                        const mealEl = document.createElement('div');
+                        mealEl.className = 'meal';
+                        mealEl.innerHTML = `
+                            <h3><i class="fas fa-${meal.time === 'breakfast' ? 'coffee' : meal.time === 'lunch' ? 'sun' : meal.time === 'dinner' ? 'moon' : 'cookie'}"></i> ${meal.name}</h3>
+                            <p>${meal.description}</p>
+                            <p><strong>${meal.calories} kcal</strong> | ${meal.macros}</p>
+                            <div class="meal-meta">
+                                <span><i class="fas fa-clock"></i> ${meal.time}</span>
+                                <button onclick="addMealToLog('${meal.name.replace("'", "\\'")}', ${meal.calories}, '${meal.time}')" class="btn-sm" style="margin-left: auto;">
+                                    <i class="fas fa-plus"></i> Add to Log
+                                </button>
+                            </div>
+                        `;
+                        mealPlanResult.appendChild(mealEl);
+                    });
+                }
+            }
+            
+            const groceryBtn = document.createElement('button');
+            groceryBtn.className = 'btn-secondary';
+            groceryBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Generate Grocery List';
+            groceryBtn.style.marginTop = '1.5rem';
+            groceryBtn.addEventListener('click', generateGroceryList);
+            mealPlanResult.appendChild(groceryBtn);
+        }
+        
+        // Add meal to food log
+        function addMealToLog(name, calories, time) {
+            const food = {
+                id: Date.now(),
+                name,
+                calories,
+                time,
+                date: new Date().toLocaleTimeString()
+            };
+            
+            state.foods.push(food);
+            state.caloriesConsumed += calories;
+            state.lastActivityDate = new Date().toISOString();
+            addFoodToDOM(food);
+            updateUI();
+            
+            showNotification(`${name} added to food log!`, 'success');
+        }
+        
+        // Generate grocery list (simplified)
+        function generateGroceryList() {
+            if (!state.mealPlan) return;
+            
+            // In a real app, we would parse the meal descriptions for ingredients
+            // For this demo, we'll just show a sample list based on diet preference
+            const groceryLists = {
+                balanced: [
+                    'Eggs', 'Chicken breast', 'Salmon fillet', 'Greek yogurt',
+                    'Mixed berries', 'Spinach', 'Avocado', 'Whole wheat bread',
+                    'Quinoa', 'Broccoli', 'Mixed greens', 'Cherry tomatoes',
+                    'Cucumber', 'Olive oil', 'Honey'
+                ],
+                vegetarian: [
+                    'Greek yogurt', 'Granola', 'Mixed berries', 'Chia seeds',
+                    'Whole wheat wraps', 'Chickpeas', 'Lettuce', 'Tomatoes',
+                    'Tahini', 'Red lentils', 'Brown rice', 'Vegetables',
+                    'Hummus', 'Carrots', 'Cucumbers'
+                ],
+                vegan: [
+                    'Bananas', 'Almond milk', 'Spinach', 'Chia seeds',
+                    'Peanut butter', 'Granola', 'Quinoa', 'Sweet potatoes',
+                    'Kale', 'Avocado', 'Tofu', 'Mixed vegetables',
+                    'Brown rice', 'Dates', 'Oats', 'Almond butter', 'Cocoa powder'
+                ],
+                keto: [
+                    'Eggs', 'Butter', 'Avocado', 'Spinach',
+                    'Chicken breast', 'Romaine lettuce', 'Parmesan cheese',
+                    'Caesar dressing', 'Ribeye steak', 'Broccoli',
+                    'Cheddar cheese', 'Almonds'
+                ],
+                'low-carb': [
+                    'Eggs', 'Mushrooms', 'Bell peppers', 'Cheese',
+                    'Ground turkey', 'Lettuce', 'Avocado', 'Salsa',
+                    'Cod fillet', 'Asparagus', 'Cottage cheese', 'Cinnamon'
+                ],
+                mediterranean: [
+                    'Greek yogurt', 'Honey', 'Walnuts', 'Cinnamon',
+                    'Cucumbers', 'Tomatoes', 'Olives', 'Feta cheese',
+                    'Chicken breast', 'Salmon fillet', 'Lemon', 'Herbs',
+                    'Vegetables', 'Quinoa', 'Hummus', 'Whole wheat pita'
+                ],
+                pescatarian: [
+                    'Whole grain bread', 'Cream cheese', 'Smoked salmon',
+                    'Capers', 'Tuna', 'Lettuce', 'Tomatoes',
+                    'Shrimp', 'Mixed vegetables', 'Brown rice',
+                    'Seaweed snacks'
+                ]
+            };
+            
+            const list = groceryLists[state.mealPlan.preference] || groceryLists['balanced'];
+            
+            // Create a modal to display the grocery list
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'modal-content';
+            
+            modalContent.innerHTML = `
+                <button class="close-modal" onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
+                <h2><i class="fas fa-shopping-cart"></i> Your Grocery List</h2>
+                <p>Based on your ${state.mealPlan.preference} meal plan (${state.mealPlan.goal.replace('-', ' ')})</p>
+                <ul style="margin: 1.5rem 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    ${list.map(item => `<li style="display: flex; align-items: center; gap: 8px;"><i class="fas fa-check-circle" style="color: var(--primary);"></i> ${item}</li>`).join('')}
+                </ul>
+                <button class="btn" onclick="window.print()"><i class="fas fa-print"></i> Print List</button>
+            `;
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+        
+        // Log food
+        function logFood(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('food-name').value;
+            const calories = parseInt(document.getElementById('food-calories').value);
+            const time = document.getElementById('meal-time').value;
+            
+            if (!name || !calories) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            const food = {
+                id: Date.now(),
+                name,
+                calories,
+                time,
+                date: new Date().toLocaleTimeString()
+            };
+            
+            state.foods.push(food);
+            state.caloriesConsumed += calories;
+            state.lastActivityDate = new Date().toISOString();
+            addFoodToDOM(food);
+            updateUI();
+            
+            showNotification(`${name} added to food log!`, 'success');
+            
+            // Reset form
+            foodLogForm.reset();
+        }
+        
+        // Add food to DOM
+        function addFoodToDOM(food) {
+            // Remove empty state if it exists
+            const emptyState = foodList.querySelector('.empty-state');
+            if (emptyState) foodList.removeChild(emptyState);
+            
+            const foodEl = document.createElement('div');
+            foodEl.className = 'food-item';
+            
+            foodEl.innerHTML = `
+                <div class="food-item-info">
+                    <div class="food-item-name">${food.name}</div>
+                    <div class="food-item-time">${food.time.charAt(0).toUpperCase() + food.time.slice(1)} • ${food.date}</div>
+                </div>
+                <div class="food-item-calories">${food.calories} kcal</div>
+                <div class="food-item-actions">
+                    <button onclick="removeFood(${food.id})" class="btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            foodList.appendChild(foodEl);
+        }
+        
+        // Remove food
+        function removeFood(id) {
+            const index = state.foods.findIndex(food => food.id === id);
+            if (index !== -1) {
+                const removedFood = state.foods.splice(index, 1)[0];
+                state.caloriesConsumed -= removedFood.calories;
+                updateUI();
+                
+                // Re-render food list
+                foodList.innerHTML = '';
+                state.foods.forEach(food => {
+                    addFoodToDOM(food);
+                });
+                
+                // Add empty state if no foods left
+                if (state.foods.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state';
+                    emptyState.innerHTML = `
+                        <i class="fas fa-utensils"></i>
+                        <p>No foods logged yet</p>
+                    `;
+                    foodList.appendChild(emptyState);
+                }
+                
+                showNotification('Food item removed', 'info');
+            }
+        }
+        
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Make functions available globally for button clicks
+        window.removeExercise = removeExercise;
+        window.removeFood = removeFood;
+        window.addMealToLog = addMealToLog;
+    </script>
+</body>
+</html>
